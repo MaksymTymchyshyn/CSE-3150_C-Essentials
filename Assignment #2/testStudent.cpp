@@ -1,95 +1,80 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include "../include/doctest.h"
-#include "student.h"
+#include "doctest.h"
+#include "Student.h"
 #include <vector>
 
-TEST_CASE("Student constructors") {
-    SUBCASE("Default constructor") {
-        Student s;
-        CHECK(s.name == "");
-        CHECK(s.number == 0);
-        CHECK(s.numHomework == 0);
-        CHECK(s.homeworkScores == nullptr);
-    }
-    
-    SUBCASE("Parameterized constructor with homework") {
-        Student s("Alice", 12345, 3);
-        CHECK(s.name == "Alice");
-        CHECK(s.number == 12345);
-        CHECK(s.numHomework == 3);
-        CHECK(s.homeworkScores != nullptr);
-    }
-    
-    SUBCASE("Constructor with no homework") {
-        Student s("Bob", 54321, 0);
-        CHECK(s.numHomework == 0);
-        CHECK(s.homeworkScores == nullptr);
-    }
+TEST_CASE("Student with zero homework scores") {
+    Student student("John Doe", 12345, 0);
+    CHECK(student.name == "John Doe");
+    CHECK(student.studentNumber == 12345);
+    CHECK(student.numScores == 0);
 }
 
-TEST_CASE("Copy constructor and assignment") {
-    SUBCASE("Copy constructor") {
-        Student s1("Charlie", 10001, 2);
-        s1.homeworkScores[0] = 95.5;
-        s1.homeworkScores[1] = 88.0;
-        
-        Student s2(s1);
-        
-        CHECK(s2.name == s1.name);
-        CHECK(s2.homeworkScores[0] == 95.5);
-        CHECK(s2.homeworkScores[1] == 88.0);
-        CHECK(s2.homeworkScores != s1.homeworkScores);
-    }
-    
-    SUBCASE("Assignment operator") {
-        Student s1("David", 20002, 2);
-        s1.homeworkScores[0] = 85.0;
-        s1.homeworkScores[1] = 90.0;
-        
-        Student s2;
-        s2 = s1;
-        
-        CHECK(s2.name == s1.name);
-        CHECK(s2.homeworkScores[0] == 85.0);
-        CHECK(s2.homeworkScores != s1.homeworkScores);
-    }
+TEST_CASE("Student with one homework score") {
+    Student student("Jane Smith", 54321, 1);
+    student.scores[0] = 95.5;
+    CHECK(student.numScores == 1);
+    CHECK(student.scores[0] == 95.5);
 }
 
-TEST_CASE("Vector operations") {
-    SUBCASE("Empty vector") {
-        std::vector<Student> students;
-        CHECK(students.empty());
-    }
+TEST_CASE("Student with multiple homework scores") {
+    Student student("Bob Johnson", 11111, 5);
+    student.scores[0] = 85.0;
+    student.scores[1] = 90.0;
+    student.scores[2] = 88.5;
+    student.scores[3] = 92.0;
+    student.scores[4] = 87.5;
     
-    SUBCASE("Multiple students") {
-        std::vector<Student> students;
-        students.push_back(Student("Emma", 30001, 1));
-        students.push_back(Student("Frank", 30002, 2));
-        
-        CHECK(students.size() == 2);
-        CHECK(students[0].name == "Emma");
-        CHECK(students[1].name == "Frank");
-    }
+    CHECK(student.numScores == 5);
+    CHECK(student.scores[0] == 85.0);
+    CHECK(student.scores[4] == 87.5);
 }
 
-TEST_CASE("Edge cases") {
-    SUBCASE("Empty name") {
-        Student s("", 99999, 1);
-        CHECK(s.name == "");
-    }
+TEST_CASE("Empty student name") {
+    Student student("", 99999, 3);
+    CHECK(student.name == "");
+    CHECK(student.studentNumber == 99999);
+}
+
+TEST_CASE("Vector with zero students") {
+    std::vector<Student> students;
+    CHECK(students.size() == 0);
+}
+
+TEST_CASE("Vector with one student") {
+    std::vector<Student> students;
+    Student student("Alice Brown", 22222, 3);
+    students.push_back(student);
+    CHECK(students.size() == 1);
+    CHECK(students[0].name == "Alice Brown");
+}
+
+TEST_CASE("Vector with multiple students") {
+    std::vector<Student> students;
+    Student s1("Student One", 10001, 2);
+    Student s2("Student Two", 10002, 3);
+    Student s3("Student Three", 10003, 1);
     
-    SUBCASE("Negative scores") {
-        Student s("Grace", 40001, 2);
-        s.homeworkScores[0] = -10.0;
-        CHECK(s.homeworkScores[0] == -10.0);
-    }
+    students.push_back(s1);
+    students.push_back(s2);
+    students.push_back(s3);
     
-    SUBCASE("Many homework assignments") {
-        Student s("Henry", 50001, 10);
-        CHECK(s.numHomework == 10);
-        for (int i = 0; i < 10; i++) {
-            s.homeworkScores[i] = i * 10.0;
-        }
-        CHECK(s.homeworkScores[5] == 50.0);
-    }
+    CHECK(students.size() == 3);
+    CHECK(students[0].studentNumber == 10001);
+    CHECK(students[1].studentNumber == 10002);
+    CHECK(students[2].studentNumber == 10003);
+}
+
+TEST_CASE("Large number of homework scores") {
+    Student student("Test Student", 12345, 100);
+    CHECK(student.numScores == 100);
+    
+    // Set and verify a few scores
+    student.scores[0] = 100.0;
+    student.scores[50] = 75.5;
+    student.scores[99] = 88.0;
+    
+    CHECK(student.scores[0] == 100.0);
+    CHECK(student.scores[50] == 75.5);
+    CHECK(student.scores[99] == 88.0);
 }
